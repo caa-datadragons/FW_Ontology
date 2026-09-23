@@ -51,6 +51,10 @@ nfdi_fw:FuzzinessWobblinessValue rdf:type owl:Class ;
 ###  http://w3id.org/fw_ontology/UncertainValue
 nfdi_fw:UncertainValue rdf:type owl:Class ;
                        rdfs:comment "Represents the most likely value, although it may also be a different value."@en .
+					   
+###  http://w3id.org/fw_ontology/UncertainResourceValue
+nfdi_fw:UncertainResourceValue rdf:type owl:Class ;
+                       rdfs:subClassOf nfdi_fw:UncertainValue .
 
 
 ###  http://w3id.org/fw_ontology/VagueResourceValue
