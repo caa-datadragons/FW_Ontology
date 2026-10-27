@@ -26,3 +26,27 @@ Defintion: fuzziness/wobbliness
 they can not be distinguished from each other in statements or data entries. It also covers
 any unclear situation, like ambiguous mapping of instances, properties or classes between
 ontologies or unreproducible statements, e.g. from literature.” (FuzzyWobblySW TWG)
+
+
+## Documentation
+
+The ontology is documented as a web page, built from `ontology/nfdi_fw_ontology.owl` by the workflow
+`Documentation` (pyLODE) on every change and published on GitHub Pages:
+
+- <https://caa-datadragons.github.io/FW_Ontology/> the documentation (HTML)
+- `ontology.ttl`, `ontology.rdf`, `ontology.jsonld` the same ontology in Turtle, RDF/XML and JSON-LD
+
+The namespace is `http://w3id.org/fw_ontology/`; with `https://w3id.org/fw_ontology/` (and a term such as
+`https://w3id.org/fw_ontology/UncertainValue`) a browser gets the documentation, and a client that asks for Turtle,
+RDF/XML or JSON-LD gets the file. The rules for w3id are in `deploy/w3id/fw_ontology/`.
+
+Build it locally (Python 3.11 or newer; the file is called `.owl` but holds Turtle, and the script knows that):
+
+```
+pip install -r requirements-docs.txt
+python py/build_docs.py
+```
+
+The result is in `_site/`. The script stops with a message if the ontology cannot be documented (for example an
+ontology IRI that ends in `#`, or a missing `dcterms:title`) and warns about every term without `rdfs:comment`;
+`--strict` turns the warnings into errors.

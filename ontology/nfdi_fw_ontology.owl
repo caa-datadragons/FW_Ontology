@@ -5,9 +5,15 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix nfdi_fw: <http://w3id.org/fw_ontology/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
 @base <http://w3id.org/fw_ontology/> .
 
-<http://w3id.org/fw_ontology/#> rdf:type owl:Ontology .
+<http://w3id.org/fw_ontology/> rdf:type owl:Ontology ;
+    dcterms:title "FW Ontology: classes and properties for fuzzy and wobbly data"@en ;
+    dcterms:description "Classes and properties for modelling uncertain, vague and fuzzy/wobbly data in RDF, by the NFDI4Objects TWG FuzzyWobblySW (Community-Standards for modelling fuzziness and wobbliness in research data using Semantic Web technologies and formalisms)."@en ;
+    dcterms:license <https://creativecommons.org/publicdomain/zero/1.0/> ;
+    rdfs:seeAlso <https://zenodo.org/records/14893827> ,
+                 <https://zenodo.org/records/19877825> .
 
 #################################################################
 #    Object Properties

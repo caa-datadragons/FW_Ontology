@@ -1,0 +1,13 @@
+# Only for building the documentation (py/build_docs.py and .github/workflows/docs.yml).
+#
+# Runs on Python 3.10 and newer; the workflow uses 3.12.
+# The exact versions are pinned on purpose: pyLODE 3.4.1 to 3.6.0 (tested 2026-10-27)
+# do not even import any more, because they depend on an unpinned helper package
+# (kurra) whose newer releases removed a function they use. 3.2.0 is the newest
+# version that built this ontology. Raise the pin only together with a test build.
+# markdown 3.11 needs Python 3.11, so Python 3.10 gets 3.10.2 (both tested).
+pylode==3.2.0
+rdflib==7.6.0
+dominate==2.9.1
+markdown==3.11.2; python_version >= "3.11"
+markdown==3.10.2; python_version < "3.11"

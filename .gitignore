@@ -1,0 +1,4 @@
+# built by py/build_docs.py, published by the workflow, not committed
+_site/
+__pycache__/
+*.pyc
