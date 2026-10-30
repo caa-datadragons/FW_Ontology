@@ -5,8 +5,8 @@ Build the web documentation of the FW Ontology.
     python py/build_docs.py                 read ontology/nfdi_fw_ontology.owl, write _site/
     python py/build_docs.py --strict        warnings become errors
     python py/build_docs.py --src X --out Y other input / output folder
-    python py/build_docs.py --extra ontology/draft/fw_extension_draft.ttl --out _site/draft --banner "..."
-                                            document the ontology together with a draft extension
+    python py/build_docs.py --extra MORE.ttl --out DIR --banner "..."
+                                            document the ontology together with further Turtle files
 
 The source file is called ``.owl`` but holds Turtle, so neither rdflib nor
 pyLODE would guess its format from the extension. This script reads it as

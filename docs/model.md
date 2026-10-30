@@ -1,6 +1,6 @@
 # Model
 
-The draft answers one question: how does a statement say *how much* it holds, *what kind of* fuzziness
+The extension answers one question: how does a statement say *how much* it holds, *what kind of* fuzziness
 that is, and *how* the number was obtained?
 
 ## New properties
@@ -23,9 +23,9 @@ points to a term and not to a class.
 
 `fw:FuzzinessWobbliness` is the umbrella term, used when vagueness and uncertainty cannot be told apart.
 
-The draft also proposes that `fw:UncertainValue` and `fw:VagueValue` become subclasses of
-`fw:FuzzinessWobblinessValue`, so that the value classes follow the same umbrella as the type terms.
-This is the only **change** to the current ontology; everything else is addition.
+`fw:UncertainValue` and `fw:VagueValue` are subclasses of `fw:FuzzinessWobblinessValue`, so that the value
+classes follow the same umbrella as the type terms. This is the only change to what the ontology said before;
+everything else is addition.
 
 ![Branch: value classes](img/branch-value-classes.svg)
 
@@ -39,7 +39,8 @@ The list is open: a new method is a new individual, not a change of the ontology
 ![Branch: method](img/branch-method.svg)
 
 The AMT logics (Goedel, product, Lukasiewicz, Einstein product, geometric mean, Hamacher product) are
-propagation methods. Typing them belongs in `amt.ttl`; the draft contains the triples only to draw them.
+propagation methods. Typing them belongs in `amt.ttl`; `data/amt-alignment.ttl` holds the proposed triples,
+which is why the logics are drawn with a dashed outline.
 
 ## Evidence
 

@@ -2,8 +2,7 @@
 #
 # One-off setting: Settings -> Pages -> Build and deployment -> Source: "GitHub Actions".
 # Result:
-#   https://caa-datadragons.github.io/FW_Ontology/         reference of the current ontology (pyLODE)
-#   https://caa-datadragons.github.io/FW_Ontology/draft/   reference with the draft extension
+#   https://caa-datadragons.github.io/FW_Ontology/         reference of the ontology (pyLODE)
 #   https://caa-datadragons.github.io/FW_Ontology/guide/   guide with figures (docs/*.md)
 name: Documentation
 
@@ -47,7 +46,7 @@ jobs:
           cache: pip
           cache-dependency-path: requirements-docs.txt
       - run: pip install -r requirements-docs.txt
-      # Reference (current ontology), reference with the draft, guide with figures.
+      # Reference of the ontology and guide with figures.
       # Fails on an ontology that pyLODE cannot document (see the docstring of py/build_docs.py).
       - run: python main.py
       - uses: actions/configure-pages@v6

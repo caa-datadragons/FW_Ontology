@@ -7,8 +7,8 @@ The pictures are made from the ontology files themselves, so they cannot drift f
                               [--draft DRAFT.ttl ...] [--data EXAMPLE.ttl] [--jpg]
 
 ONTOLOGY    files of the current ontology (Turtle, also when the file is called .owl)
---draft     files proposed on top of it: terms and links that are not in the current
-            ontology are drawn with a dashed outline
+--draft     files proposed on top of it (e.g. the AMT alignment): terms and links that are
+            not in the ontology are drawn with a dashed outline
 --data      instance data (reified statements with fw:hasDegreeOfConnection, fw:hasType,
             fw:hasMethod and optional fw:derivedFrom) for the AMT view
 --jpg       also write a JPG per picture (needs cairosvg and Pillow; the SVG needs neither)
@@ -221,7 +221,7 @@ def legend(y, individuals, draft):
         arrow("type", "rdf:type")
         arrow("broader", "skos:broader")
     if draft:
-        swatch("#ffffff", "dashed = proposed, not in the current ontology", dashed=True)
+        swatch("#ffffff", "dashed = proposed, not in the ontology", dashed=True)
     return out, x
 
 
@@ -240,7 +240,7 @@ def property_lines(g, g0):
     lines = []
     for kind in (OWL.ObjectProperty, OWL.DatatypeProperty):
         for p in g.subjects(RDF.type, kind):
-            if not isinstance(p, URIRef) or (p, RDF.type, None) in g0:
+            if not isinstance(p, URIRef):
                 continue
             rng = next(iter(g.objects(p, RDFS.range)), None)
             dom = next(iter(g.objects(p, RDFS.domain)), None)
@@ -263,13 +263,13 @@ def view_classes(g, g0, draft):
     props = property_lines(g, g0)
     if props:
         pw = max(len(s) for s in props) * 6.4 + 24
-        label(out, rx, y + 14, "New properties", size=14, weight="bold", anchor="start")
+        label(out, rx, y + 14, "Properties  (domain)  ->  range", size=14, weight="bold", anchor="start")
         out.append(f'<rect x="{rx}" y="{y + 28}" width="{pw:.0f}" height="{len(props) * 24 + 12}" rx="8" '
-                   f'fill="#fff8e1" stroke="#000000" stroke-width="1.4" stroke-dasharray="6 4"/>')
+                   f'fill="#fff8e1" stroke="#000000" stroke-width="1.4"/>')
         for i, s in enumerate(props):
             label(out, rx + 12, y + 52 + i * 24, s, size=12, anchor="start")
         right, bottom = max(right, rx + pw), max(bottom, y + 40 + len(props) * 24)
-    leg, lright = legend(bottom + 30, False, draft)
+    leg, lright = legend(bottom + 30, False, draft and 'stroke-dasharray="6 4"' in "".join(out))
     return finish("FW ontology: class hierarchy (classes only)", out + leg, max(right, lright), bottom + 40)
 
 
@@ -277,7 +277,7 @@ def view_branch(g, g0, title, root, draft):
     out = []
     label(out, 30, 62, title, size=14, weight="bold", anchor="start")
     right, bottom, _ = draw_tree(g, g0, root, 30, 100, out, True)
-    leg, lright = legend(bottom + 30, True, draft)
+    leg, lright = legend(bottom + 30, True, draft and 'stroke-dasharray="6 4"' in "".join(out))
     return finish(f"FW ontology: {title} (classes and individuals)", out + leg, max(right, lright), bottom + 40)
 
 

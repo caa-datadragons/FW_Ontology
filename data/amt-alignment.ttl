@@ -1,0 +1,15 @@
+@prefix fw:  <http://w3id.org/fw_ontology/> .
+@prefix amt: <http://academic-meta-tool.xyz/vocab#> .
+
+# =============================================================================
+# Proposed alignment: the AMT logics are propagation methods of the FW ontology.
+# These triples belong in amt.ttl (amt-engine), not in the FW ontology; they are
+# read only to draw the logics under fw:PropagationMethod in the method figure.
+# =============================================================================
+
+amt:GoedelLogic       a fw:PropagationMethod .
+amt:ProductLogic      a fw:PropagationMethod .
+amt:LukasiewiczLogic  a fw:PropagationMethod .
+amt:EinsteinProduct   a fw:PropagationMethod .
+amt:GeometricMean     a fw:PropagationMethod .
+amt:HamacherProduct   a fw:PropagationMethod .

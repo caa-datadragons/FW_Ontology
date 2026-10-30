@@ -23,12 +23,12 @@ The weight of an edge is taken from the string in the source (Thiery, Mees, Toll
 - **?** counts as one more share (`n_question` = 1).
 - The result is rounded to two decimals. A string that mixes AND and OR is not covered.
 
-In the draft this rule is the individual `fw:EqualShareRule`, a `fw:RuleBasedMethod` with the formula as a
+In the ontology this rule is the individual `fw:EqualShareRule`, a `fw:RuleBasedMethod` with the formula as a
 literal, so that it can be named, described and resolved like any other method.
 
 ## The hextuple
 
-With the draft, the weight is written as `fw:hasDegreeOfConnection` (the same property as `amt:weight`),
+With the ontology, the weight is written as `fw:hasDegreeOfConnection` (the same property as `amt:weight`),
 and the edge gets a type and a method. The source string is kept as evidence.
 
 | Part | Property |

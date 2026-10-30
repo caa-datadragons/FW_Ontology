@@ -8,7 +8,7 @@ The guide explains the ontology; the reference (every class and property) is the
 built by py/build_docs.py. This script
 
   1. draws the figures with py/build_hierarchy.py and py/build_amt_schema.py. Their sources are the
-     current ontology, the draft extension and the example data, so a figure cannot drift from them,
+     ontology, the proposed AMT alignment and the example data, so a figure cannot drift from them,
   2. renders each docs/*.md to a self-contained HTML page (one style block, no script, no external
      request) with a small navigation, and copies the figures next to the pages.
 
@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import argparse
 import re
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -30,7 +31,8 @@ ROOT = Path(__file__).resolve().parent.parent
 PY = ROOT / "py"
 
 ONTOLOGY = ROOT / "ontology" / "nfdi_fw_ontology.owl"
-DRAFT = ROOT / "ontology" / "draft" / "fw_extension_draft.ttl"
+ALIGNMENT = ROOT / "data" / "amt-alignment.ttl"
+LOGO = ROOT / "docs" / "assets" / "caa-datadragons.png"
 DATA = ROOT / "data" / "fw_amt_example.ttl"
 AMT = ROOT / "data" / "external" / "amt.ttl"
 
@@ -41,18 +43,21 @@ PAGES = [  # (file in docs/, title in the navigation)
 ]
 
 CSS = """
-:root{--fg:#1a1a1a;--muted:#555;--line:#d0d7de;--bg:#fff;--code:#f6f8fa;--link:#0b5cad}
-@media (prefers-color-scheme:dark){:root{--fg:#e6e6e6;--muted:#aaa;--line:#3a3f45;--bg:#14171a;--code:#1d2126;--link:#6cb0f5}}
-body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,Segoe UI,Helvetica,Arial,sans-serif}
-header{border-bottom:1px solid var(--line);padding:.8rem 1rem}
-nav a{margin-right:1.1rem;color:var(--link);text-decoration:none}nav a.here{font-weight:700;color:var(--fg)}
+:root{--teal:#00c3c9;--blue:#0098d6;--ink:#12303f;--muted:#4f6470;--line:#cfe3ea;--code:#f1f8fb;--link:#0077b0}
+body{margin:0;background:#fff;color:var(--ink);font:16px/1.55 system-ui,Segoe UI,Helvetica,Arial,sans-serif}
+header{border-bottom:4px solid var(--teal);border-image:linear-gradient(90deg,var(--teal),var(--blue)) 1;padding:.6rem 1rem;display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap}
+header img{height:44px;width:44px;border:0;border-radius:0}
+nav a{margin-right:1.1rem;color:var(--link);text-decoration:none}nav a:hover{text-decoration:underline}
+nav a.here{font-weight:700;color:var(--ink);border-bottom:3px solid var(--teal)}
 main{max-width:62rem;margin:0 auto;padding:1rem}
-a{color:var(--link)}img{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:6px}
+h1,h2,h3{color:var(--ink)}h2{border-bottom:2px solid var(--line);padding-bottom:.2rem}
+a{color:var(--link)}img{max-width:100%;height:auto;background:#fff}main img{border:1px solid var(--line);border-radius:6px}
 table{border-collapse:collapse;margin:1rem 0;display:block;overflow-x:auto}
+th{background:linear-gradient(90deg,var(--teal),var(--blue));color:#fff}
 th,td{border:1px solid var(--line);padding:.35rem .6rem;text-align:left;vertical-align:top}
 code,pre{background:var(--code);border-radius:4px;font:14px ui-monospace,Consolas,monospace}
 code{padding:.1rem .3rem}pre{padding:.8rem;overflow-x:auto}pre code{padding:0;background:none}
-blockquote{margin:1rem 0;padding:.1rem 1rem;border-left:4px solid var(--line);color:var(--muted)}
+blockquote{margin:1rem 0;padding:.1rem 1rem;border-left:4px solid var(--teal);background:var(--code);color:var(--muted)}
 footer{border-top:1px solid var(--line);padding:1rem;color:var(--muted);font-size:14px;text-align:center}
 """
 
@@ -69,7 +74,7 @@ def run(args: list[str]) -> None:
 
 def draw_figures(img: Path) -> None:
     img.mkdir(parents=True, exist_ok=True)
-    run([str(PY / "build_hierarchy.py"), str(ONTOLOGY), "--draft", str(DRAFT), "--data", str(DATA), "--out", str(img)])
+    run([str(PY / "build_hierarchy.py"), str(ONTOLOGY), "--draft", str(ALIGNMENT), "--data", str(DATA), "--out", str(img)])
     run([str(PY / "build_amt_schema.py"), str(AMT), "--out", str(img)])
     missing = [f for f in FIGURES if not (img / f"{f}.svg").is_file()]
     if missing:
@@ -80,12 +85,12 @@ def page(name: str, title: str, body: str) -> str:
     nav = "".join(
         f'<a href="{n}.html"{" class=here" if n == name else ""}>{escape(t)}</a>' for n, t in PAGES
     )
-    nav += '<a href="../index.html">Reference</a><a href="../draft/index.html">Reference with draft</a>'
+    nav += '<a href="../index.html">Reference</a>'
     return (
         f'<!DOCTYPE html>\n<html lang="en"><head><meta charset="utf-8">'
         f'<meta name="viewport" content="width=device-width,initial-scale=1">'
-        f"<title>{escape(title)} - FW Ontology</title><style>{CSS}</style></head>"
-        f"<body><header><nav>{nav}</nav></header><main>\n{body}\n</main>"
+        f"<title>{escape(title)} - FW Ontology</title><link rel=icon href=img/logo.png><style>{CSS}</style></head>"
+        f'<body><header><img src="img/logo.png" alt="CAA DataDragons"><nav>{nav}</nav></header><main>\n{body}\n</main>'
         f'<footer>FW Ontology guide, generated from the files in the repository '
         f'<a href="https://github.com/caa-datadragons/FW_Ontology">caa-datadragons/FW_Ontology</a></footer>'
         f"</body></html>\n"
@@ -95,6 +100,7 @@ def page(name: str, title: str, body: str) -> str:
 def build(out: Path) -> int:
     docs = ROOT / "docs"
     draw_figures(out / "img")
+    shutil.copyfile(LOGO, out / "img" / "logo.png")
     md = markdown.Markdown(extensions=["tables", "fenced_code", "toc"])
     for name, title in PAGES:
         src = docs / f"{name}.md"

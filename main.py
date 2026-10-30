@@ -4,15 +4,14 @@
     python main.py                     all steps, in order
     python main.py --list              print the steps and exit
     python main.py --only guide        one step
-    python main.py --from draft        this step and all after it
+    python main.py --from guide        this step and all after it
     python main.py --skip ontology     all but this step
     python main.py --dry-run           print the plan, run nothing
     python main.py --strict            warnings of the reference become errors (what CI could use)
 
 Steps (each one is also a script that runs on its own):
 
-    ontology   py/build_docs.py    pyLODE reference of the current ontology   -> _site/
-    draft      py/build_docs.py    pyLODE reference with the draft extension  -> _site/draft/
+    ontology   py/build_docs.py    pyLODE reference of the ontology           -> _site/
     guide      py/build_guide.py   figures + the pages in docs/               -> _site/guide/
 
 The output folder ``_site/`` is generated and not committed. Nothing in it carries a date.
@@ -31,17 +30,7 @@ ROOT = Path(__file__).resolve().parent
 PY = ROOT / "py"
 
 STEPS: list[tuple[str, str, list[str]]] = [  # (name, description, command after the interpreter)
-    ("ontology", "reference of the current ontology", [str(PY / "build_docs.py")]),
-    (
-        "draft",
-        "reference of the ontology with the draft extension",
-        [
-            str(PY / "build_docs.py"),
-            "--extra", str(ROOT / "ontology" / "draft" / "fw_extension_draft.ttl"),
-            "--out", str(ROOT / "_site" / "draft"),
-            "--banner", "Draft: this page documents the ontology together with a proposed extension that is not yet part of it.",
-        ],
-    ),
+    ("ontology", "reference of the ontology", [str(PY / "build_docs.py")]),
     ("guide", "figures and guide pages", [str(PY / "build_guide.py")]),
 ]
 
