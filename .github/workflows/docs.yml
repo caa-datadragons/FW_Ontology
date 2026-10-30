@@ -1,7 +1,10 @@
-# Builds the web documentation of the ontology (pyLODE) and publishes it on GitHub Pages.
+# Builds the web documentation with `python main.py` and publishes it on GitHub Pages.
 #
 # One-off setting: Settings -> Pages -> Build and deployment -> Source: "GitHub Actions".
-# Result: https://caa-datadragons.github.io/FW_Ontology/ (index.html, ontology.ttl, .rdf, .jsonld)
+# Result:
+#   https://caa-datadragons.github.io/FW_Ontology/         reference of the current ontology (pyLODE)
+#   https://caa-datadragons.github.io/FW_Ontology/draft/   reference with the draft extension
+#   https://caa-datadragons.github.io/FW_Ontology/guide/   guide with figures (docs/*.md)
 name: Documentation
 
 on:
@@ -9,13 +12,19 @@ on:
     branches: [main]
     paths:
       - "ontology/**"
-      - "py/build_docs.py"
+      - "data/**"
+      - "docs/**"
+      - "py/**"
+      - "main.py"
       - "requirements-docs.txt"
       - ".github/workflows/docs.yml"
   pull_request:
     paths:
       - "ontology/**"
-      - "py/build_docs.py"
+      - "data/**"
+      - "docs/**"
+      - "py/**"
+      - "main.py"
   workflow_dispatch:
 
 permissions:
@@ -38,8 +47,9 @@ jobs:
           cache: pip
           cache-dependency-path: requirements-docs.txt
       - run: pip install -r requirements-docs.txt
-      # Fails on an ontology that pyLODE cannot document (see the docstring of the script).
-      - run: python py/build_docs.py
+      # Reference (current ontology), reference with the draft, guide with figures.
+      # Fails on an ontology that pyLODE cannot document (see the docstring of py/build_docs.py).
+      - run: python main.py
       - uses: actions/configure-pages@v6
         if: github.event_name != 'pull_request'
       - uses: actions/upload-pages-artifact@v5

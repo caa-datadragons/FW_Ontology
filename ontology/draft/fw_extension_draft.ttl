@@ -1,0 +1,192 @@
+@prefix fw:      <http://w3id.org/fw_ontology/> .
+@prefix amt:     <http://academic-meta-tool.xyz/vocab#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix prov:    <http://www.w3.org/ns/prov#> .
+
+# =============================================================================
+# DRAFT extension of the FW ontology (not yet part of ontology/nfdi_fw_ontology.owl).
+# The workflow builds the draft reference and the guide from this file; see docs/.
+# Purpose: a statement (e.g. an AMT edge) carries a degree, a type and a method.
+# The prefix is fw: ; the namespace IRI http://w3id.org/fw_ontology/ is unchanged.
+# =============================================================================
+
+# ---- properties -------------------------------------------------------------
+
+fw:hasDegreeOfConnection a owl:DatatypeProperty ;
+    rdfs:label "has degree of connection"@en ;
+    rdfs:comment "Degree [0-1] to which a connection (statement, edge) holds. Same meaning as amt:weight. Not the same as fw:hasConfidence, which is an assessment by a contributor or a system."@en ;
+    rdfs:range xsd:decimal ;
+    owl:equivalentProperty amt:weight ;
+    rdfs:seeAlso fw:hasConfidence .
+
+fw:hasMethod a owl:ObjectProperty ;
+    rdfs:label "has method"@en ;
+    rdfs:comment "The method by which a degree (or another fuzziness or uncertainty value) was obtained."@en ;
+    rdfs:range fw:Method .
+
+fw:hasType a owl:ObjectProperty ;
+    rdfs:label "has type"@en ;
+    rdfs:comment "The kind of fuzziness/wobbliness a statement or value is affected by: vagueness, uncertainty, or the two together."@en ;
+    rdfs:range fw:FW_Type .
+
+fw:formula a owl:DatatypeProperty ;
+    rdfs:label "formula"@en ;
+    rdfs:comment "The calculation rule of a method as plain text, e.g. 1 / (n_question + n_possibilities)."@en ;
+    rdfs:domain fw:Method ;
+    rdfs:range xsd:string .
+
+fw:implementedBy a owl:ObjectProperty ;
+    rdfs:label "implemented by"@en ;
+    rdfs:comment "Resolvable IRI of the code that implements the method (repository file, release or software DOI)."@en ;
+    rdfs:domain fw:Method .
+
+# ---- evidence (optional link from a statement to what its degree is based on) -
+
+fw:derivedFrom a owl:ObjectProperty ;
+    rdfs:subPropertyOf prov:wasDerivedFrom ;
+    rdfs:label "derived from"@en ;
+    rdfs:comment "Optional. Links a statement to what its degree rests on: the evidence it was derived from (source string, image, embedding) or, for a derived statement, the statements it was derived from. Several statements may share one evidence node, which keeps them together (e.g. the alternatives of an OR)."@en .
+
+fw:Evidence a owl:Class ;
+    rdfs:label "Evidence"@en ;
+    rdfs:comment "What a degree or another fuzziness value is based on, as found in the source."@en .
+
+fw:TextEvidence a owl:Class ;
+    rdfs:subClassOf fw:Evidence ;
+    rdfs:label "text evidence"@en ;
+    rdfs:comment "A text as given in the source, e.g. the string 'Lezoux or Vichy ?'."@en .
+
+fw:MediaEvidence a owl:Class ;
+    rdfs:subClassOf fw:Evidence ;
+    rdfs:label "media evidence"@en ;
+    rdfs:comment "An image, scan, audio or other media object, given by a link; e.g. the image an AI detection was run on."@en .
+
+fw:EmbeddingEvidence a owl:Class ;
+    rdfs:subClassOf fw:Evidence ;
+    rdfs:label "embedding evidence"@en ;
+    rdfs:comment "A semantic embedding (vector) of a text, image or other object, given by a link to the vector and the model that produced it."@en .
+
+fw:sourceString a owl:DatatypeProperty ;
+    rdfs:label "source string"@en ;
+    rdfs:comment "The text exactly as given in the source."@en ;
+    rdfs:domain fw:TextEvidence ;
+    rdfs:range xsd:string .
+
+fw:hasMediaLink a owl:ObjectProperty ;
+    rdfs:label "has media link"@en ;
+    rdfs:comment "Resolvable IRI of the media object (image, scan, audio)."@en ;
+    rdfs:domain fw:MediaEvidence .
+
+fw:hasEmbedding a owl:ObjectProperty ;
+    rdfs:label "has embedding"@en ;
+    rdfs:comment "Resolvable IRI of the vector (a file or an entry in a vector store). The vector itself is not written into the graph."@en ;
+    rdfs:domain fw:EmbeddingEvidence .
+
+fw:embeddingModel a owl:DatatypeProperty ;
+    rdfs:label "embedding model"@en ;
+    rdfs:comment "Name and version of the model that produced the embedding."@en ;
+    rdfs:domain fw:EmbeddingEvidence ;
+    rdfs:range xsd:string .
+
+# ---- type -------------------------------------------------------------------
+
+fw:FW_Type a owl:Class ;
+    rdfs:label "FW type"@en ;
+    rdfs:comment "Kind of fuzziness/wobbliness. The terms are individuals, so that fw:hasType points to a term, not to a class."@en .
+
+fw:FuzzinessWobbliness a fw:FW_Type ;
+    rdfs:label "fuzziness/wobbliness"@en ;
+    rdfs:comment "Umbrella term; used when vagueness and uncertainty cannot be told apart."@en .
+
+fw:Vagueness a fw:FW_Type ;
+    rdfs:label "vagueness"@en ;
+    skos:broader fw:FuzzinessWobbliness .
+
+fw:Uncertainty a fw:FW_Type ;
+    rdfs:label "uncertainty"@en ;
+    skos:broader fw:FuzzinessWobbliness .
+
+# ---- existing value classes: umbrella relation (CHANGE to the current file) --
+
+fw:UncertainValue rdfs:subClassOf fw:FuzzinessWobblinessValue .
+fw:VagueValue     rdfs:subClassOf fw:FuzzinessWobblinessValue .
+
+# ---- method -----------------------------------------------------------------
+
+fw:Method a owl:Class ;
+    rdfs:label "Method"@en ;
+    rdfs:comment "A procedure that produces or combines degrees of connection, confidences or other fuzziness values. Concrete methods are individuals and are resolvable by their IRI."@en .
+
+fw:AssignmentMethod a owl:Class ;
+    rdfs:subClassOf fw:Method ;
+    rdfs:label "assignment method"@en ;
+    rdfs:comment "Obtains a degree for a single statement from its source."@en .
+
+fw:PropagationMethod a owl:Class ;
+    rdfs:subClassOf fw:Method ;
+    rdfs:label "propagation method"@en ;
+    rdfs:comment "Combines the degrees along a chain of statements into the degree of a derived statement."@en .
+
+fw:RuleBasedMethod a owl:Class ;
+    rdfs:subClassOf fw:AssignmentMethod ;
+    rdfs:label "rule-based method"@en ;
+    rdfs:comment "A fixed rule applied to the form of the source statement."@en .
+
+fw:StatisticalMethod a owl:Class ;
+    rdfs:subClassOf fw:AssignmentMethod ;
+    rdfs:label "statistical method"@en ;
+    rdfs:comment "A degree computed from observed data by a statistical procedure."@en .
+
+fw:CorrelationMethod a owl:Class ;
+    rdfs:subClassOf fw:StatisticalMethod ;
+    rdfs:label "correlation method"@en ;
+    rdfs:comment "A degree taken from the strength of a correlation between two series, e.g. Pearson."@en .
+
+fw:ProbabilityMethod a owl:Class ;
+    rdfs:subClassOf fw:StatisticalMethod ;
+    rdfs:label "probability method"@en ;
+    rdfs:comment "A degree taken from a probability, classical or estimated."@en .
+
+fw:MachineLearningMethod a owl:Class ;
+    rdfs:subClassOf fw:AssignmentMethod ;
+    rdfs:label "machine learning method"@en ;
+    rdfs:comment "A degree reported by a trained model, e.g. a classifier confidence."@en .
+
+fw:ExpertAssessment a owl:Class ;
+    rdfs:subClassOf fw:AssignmentMethod ;
+    rdfs:label "expert assessment"@en ;
+    rdfs:comment "A degree set by a person from judgement."@en .
+
+# ---- method individuals (examples; the list is open) ------------------------
+
+fw:EqualShareRule a fw:RuleBasedMethod ;
+    rdfs:label "equal share rule"@en ;
+    rdfs:comment "Reads the AND / OR / '?' form of a source string. The alternatives of an OR share the weight equally, AND keeps the full weight for every entity, and a question mark counts as one more share. Rounded to two decimals. A string that mixes AND and OR is not covered."@en ;
+    fw:formula "1 / (n_question + n_possibilities)" .
+    # fw:implementedBy <...> follows once the code is published
+
+fw:PearsonCorrelation a fw:CorrelationMethod ;
+    rdfs:label "Pearson correlation"@en ;
+    fw:formula "r = cov(X, Y) / (sd(X) * sd(Y))" .
+
+fw:ClassicalProbability a fw:ProbabilityMethod ;
+    rdfs:label "classical probability"@en ;
+    fw:formula "P(A) = favourable cases / possible cases" .
+
+fw:ModelConfidenceScore a fw:MachineLearningMethod ;
+    rdfs:label "model confidence score"@en ;
+    rdfs:comment "The score a model reports for its own prediction. It is not a calibrated probability unless the model is calibrated."@en .
+
+# ---- alignment with AMT (these triples belong in amt.ttl, not here) ----------
+
+amt:GoedelLogic       a fw:PropagationMethod .
+amt:ProductLogic      a fw:PropagationMethod .
+amt:LukasiewiczLogic  a fw:PropagationMethod .
+amt:EinsteinProduct   a fw:PropagationMethod .
+amt:GeometricMean     a fw:PropagationMethod .
+amt:HamacherProduct   a fw:PropagationMethod .

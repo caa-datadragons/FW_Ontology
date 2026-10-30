@@ -5,6 +5,8 @@ Build the web documentation of the FW Ontology.
     python py/build_docs.py                 read ontology/nfdi_fw_ontology.owl, write _site/
     python py/build_docs.py --strict        warnings become errors
     python py/build_docs.py --src X --out Y other input / output folder
+    python py/build_docs.py --extra ontology/draft/fw_extension_draft.ttl --out _site/draft --banner "..."
+                                            document the ontology together with a draft extension
 
 The source file is called ``.owl`` but holds Turtle, so neither rdflib nor
 pyLODE would guess its format from the extension. This script reads it as
@@ -30,6 +32,7 @@ from __future__ import annotations
 import argparse
 import sys
 from pathlib import Path
+from xml.sax.saxutils import escape
 
 from rdflib import RDF, RDFS, SKOS, Graph, Namespace, URIRef
 from rdflib.namespace import DCTERMS, OWL
@@ -103,12 +106,17 @@ def check(g: Graph, rep: Report) -> URIRef | None:
     return ont
 
 
-def build(src: Path, out: Path, strict: bool) -> int:
+def build(src: Path, out: Path, strict: bool, extra: list[Path] | None = None, banner: str = "") -> int:
     rep = Report()
     if not src.is_file():
         rep.error(f"{src} not found")
         return 1
     g = load(src)
+    for path in extra or []:
+        if not path.is_file():
+            rep.error(f"{path} not found")
+            return 1
+        g.parse(path, format="turtle")  # the extension adds terms to the same graph
     if check(g, rep) is None:
         return 1
     if strict and rep.warnings:
@@ -124,18 +132,20 @@ def build(src: Path, out: Path, strict: bool) -> int:
     from pylode import OntPub  # imported late: needs Python 3.11 or newer
 
     OntPub(ontology=g).make_html(destination=out / "index.html")
-    add_downloads(out / "index.html")
+    add_downloads(out / "index.html", banner)
     rep.ok(f"wrote {out}: index.html, ontology.ttl, ontology.rdf, ontology.jsonld")
     return 0
 
 
-def add_downloads(html_file: Path) -> None:
+def add_downloads(html_file: Path, banner: str = "") -> None:
     """Put a line with the download links under the first heading (pyLODE has no place for them)."""
     html = html_file.read_text(encoding="utf-8")
     line = (
         '<p>Download: <a href="ontology.ttl">Turtle</a> &middot; '
         '<a href="ontology.rdf">RDF/XML</a> &middot; <a href="ontology.jsonld">JSON-LD</a></p>'
     )
+    if banner:
+        line = f'<p><strong>{escape(banner)}</strong></p>' + line
     marker = "</h1>"
     if marker in html:
         html_file.write_text(html.replace(marker, marker + line, 1), encoding="utf-8")
@@ -145,9 +155,11 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("--src", type=Path, default=DEFAULT_SRC, help="the ontology (Turtle, whatever the extension)")
     ap.add_argument("--out", type=Path, default=DEFAULT_OUT, help="output folder (default: _site)")
+    ap.add_argument("--extra", nargs="*", default=[], type=Path, help="Turtle files added to the ontology (a draft)")
+    ap.add_argument("--banner", default="", help="a line printed under the title (e.g. 'Draft, not yet part of the ontology')")
     ap.add_argument("--strict", action="store_true", help="treat warnings as errors")
     args = ap.parse_args(argv)
-    return build(args.src, args.out, args.strict)
+    return build(args.src, args.out, args.strict, args.extra, args.banner)
 
 
 if __name__ == "__main__":

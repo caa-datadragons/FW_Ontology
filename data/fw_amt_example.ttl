@@ -1,0 +1,50 @@
+@prefix ex:  <http://example.org/samian/> .
+@prefix fw:  <http://w3id.org/fw_ontology/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# =============================================================================
+# EXAMPLE DATA for the AMT view. Illustration only: ex: stands for the lado terms
+# (ex:producedAt is a placeholder for the real property), the values are invented.
+# Statements are named (not blank nodes) so that the drawing is deterministic.
+# =============================================================================
+
+# 1) Source string "Lezoux or Vichy ?": two alternatives share one evidence node.
+#    n_question = 1, n_possibilities = 2  ->  1 / 3 = 0.33
+
+ex:ev1 a fw:TextEvidence ;
+    fw:sourceString "Lezoux or Vichy ?" .
+
+ex:s1 rdf:subject ex:carrier1 ; rdf:predicate ex:producedAt ; rdf:object ex:Lezoux ;
+    fw:hasDegreeOfConnection "0.33"^^xsd:decimal ;
+    fw:hasType   fw:FuzzinessWobbliness ;
+    fw:hasMethod fw:EqualShareRule ;
+    fw:derivedFrom ex:ev1 .
+
+ex:s2 rdf:subject ex:carrier1 ; rdf:predicate ex:producedAt ; rdf:object ex:Vichy ;
+    fw:hasDegreeOfConnection "0.33"^^xsd:decimal ;
+    fw:hasType   fw:FuzzinessWobbliness ;
+    fw:hasMethod fw:EqualShareRule ;
+    fw:derivedFrom ex:ev1 .
+
+# 2) Source string "South Gaul?": one entity and a question mark -> 1 / (1 + 1) = 0.5
+
+ex:ev2 a fw:TextEvidence ;
+    fw:sourceString "South Gaul?" .
+
+ex:s3 rdf:subject ex:carrier2 ; rdf:predicate ex:producedAt ; rdf:object ex:SouthGaul ;
+    fw:hasDegreeOfConnection "0.50"^^xsd:decimal ;
+    fw:hasType   fw:Uncertainty ;
+    fw:hasMethod fw:EqualShareRule ;
+    fw:derivedFrom ex:ev2 .
+
+# 3) An AI detection on an image: the evidence is the image, the method a model score.
+
+ex:ev3 a fw:MediaEvidence ;
+    fw:hasMediaLink <https://example.org/images/stamp-0815.jpg> .
+
+ex:s4 rdf:subject ex:stamp0815 ; rdf:predicate ex:depicts ; rdf:object ex:StampTypeX ;
+    fw:hasDegreeOfConnection "0.87"^^xsd:decimal ;
+    fw:hasType   fw:Uncertainty ;
+    fw:hasMethod fw:ModelConfidenceScore ;
+    fw:derivedFrom ex:ev3 .

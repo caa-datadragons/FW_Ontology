@@ -1,4 +1,5 @@
-# FW Ontology
+# Fuzzy/Wobbly Ontology (fwO)
+
 In order to model: uncertain, vague or fuzzy/wobbly data the NFDI4O TWG FuzzyWobblySW generated a set of classes an properties for RDF modelling.
 
 NFDI4Objects TWG - Community-Standards for modelling fuzziness & wobbliness in research data using Semantic Web technologies and formalisms (FuzzyWobblySW)
@@ -34,6 +35,9 @@ The ontology is documented as a web page, built from `ontology/nfdi_fw_ontology.
 `Documentation` (pyLODE) on every change and published on GitHub Pages:
 
 - <https://caa-datadragons.github.io/FW_Ontology/> the documentation (HTML)
+- <https://caa-datadragons.github.io/FW_Ontology/draft/> the same with the draft extension (`ontology/draft/`)
+- <https://caa-datadragons.github.io/FW_Ontology/guide/> a guide with figures: class hierarchy, one view per branch,
+  and the Academic Meta Tool (AMT) with concrete FW values (sources in `docs/`)
 - `ontology.ttl`, `ontology.rdf`, `ontology.jsonld` the same ontology in Turtle, RDF/XML and JSON-LD
 
 The namespace is `http://w3id.org/fw_ontology/`; with `https://w3id.org/fw_ontology/` (and a term such as
@@ -44,9 +48,10 @@ Build it locally (Python 3.11 or newer; the file is called `.owl` but holds Turt
 
 ```
 pip install -r requirements-docs.txt
-python py/build_docs.py
+python main.py
 ```
 
-The result is in `_site/`. The script stops with a message if the ontology cannot be documented (for example an
+The result is in `_site/` (`index.html`, `draft/`, `guide/`); `python main.py --list` shows the steps. The figures are
+drawn from the ontology files by `py/build_hierarchy.py` and `py/build_amt_schema.py`. `py/build_docs.py` stops with a message if the ontology cannot be documented (for example an
 ontology IRI that ends in `#`, or a missing `dcterms:title`) and warns about every term without `rdfs:comment`;
 `--strict` turns the warnings into errors.
