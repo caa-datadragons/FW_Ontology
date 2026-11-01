@@ -2,3 +2,6 @@
 _site/
 __pycache__/
 *.pyc
+
+PATCH-README.md
+PRIMER.md
