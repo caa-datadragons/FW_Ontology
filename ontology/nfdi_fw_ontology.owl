@@ -98,7 +98,7 @@ fw:hasMethod a owl:ObjectProperty ;
 
 fw:hasType a owl:ObjectProperty ;
     rdfs:label "has type"@en ;
-    rdfs:comment "The kind of fuzziness/wobbliness a statement or value is affected by: vagueness, uncertainty, or the two together."@en ;
+    rdfs:comment "The kind of fuzziness/wobbliness a statement or value is affected by: vagueness, uncertainty, or the two together. Omitted when nothing lowers the degree of the statement: the absence of a type is not a type."@en ;
     rdfs:range fw:FW_Type .
 
 fw:formula a owl:DatatypeProperty ;
@@ -202,7 +202,7 @@ fw:PropagationMethod a owl:Class ;
 fw:RuleBasedMethod a owl:Class ;
     rdfs:subClassOf fw:AssignmentMethod ;
     rdfs:label "rule-based method"@en ;
-    rdfs:comment "A fixed rule applied to the form of the source statement."@en .
+    rdfs:comment "A fixed rule applied to the source statement: to its wording, to its markup, or to both."@en .
 
 fw:StatisticalMethod a owl:Class ;
     rdfs:subClassOf fw:AssignmentMethod ;
@@ -236,6 +236,12 @@ fw:EqualShareRule a fw:RuleBasedMethod ;
     rdfs:comment "Reads the AND / OR / '?' form of a source string. The alternatives of an OR share the weight equally, AND keeps the full weight for every entity, and a question mark counts as one more share. Rounded to two decimals. A string that mixes AND and OR is not covered."@en ;
     fw:formula "1 / (n_question + n_possibilities)" .
     # fw:implementedBy <...> follows once the code is published
+
+fw:ProportionalShareRule a fw:RuleBasedMethod ;
+    rdfs:label "proportional share rule"@en ;
+    rdfs:comment "Shares one unit of degree among the alternatives that compete for the same statement, in proportion to a score each alternative has. The score of an alternative is the product of the factor scores that the source gives it (for example how well preserved it is and how many sources agree on it). With equal scores the alternatives get equal shares, as in the equal share rule. The shares of one set of alternatives add up to 1, so a single alternative always gets 1; the type, not the degree, then records what is doubtful."@en ;
+    fw:formula "d_i = s_i / sum_j s_j, with s_i = the product of the factor scores of alternative i" .
+    # fw:implementedBy: the project that implements its own rule gives it
 
 fw:PearsonCorrelation a fw:CorrelationMethod ;
     rdfs:label "Pearson correlation"@en ;

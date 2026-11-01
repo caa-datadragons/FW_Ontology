@@ -30,6 +30,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   ontology and for each term).
 - `.gitignore` for the build folder.
 
+### Added (proposal from Linked Open Ogham)
+
+- `fw:ProportionalShareRule`: shares one unit of degree among competing alternatives in proportion to the product
+  of their factor scores. Generic: any project whose alternatives carry scores can name it as the broader method
+  of its own rule (`skos:broadMatch`).
+- `data/fw_ogham_example.ttl`: five real statements (the readings of the Ogham stone Gigha 1) with their
+  hextuples, and a section "An example from real data" in `docs/amt.md`.
+
+### Changed (proposal from Linked Open Ogham)
+
+- Comment of `fw:hasType`: the type is omitted when nothing lowers the degree; the absence of a type is not a type.
+- Comment of `fw:RuleBasedMethod`: the rule may act on the wording of the source, on its markup, or on both.
+  No class, property or domain changed.
+
 ### Changed
 
 - The workflow runs `python main.py` and publishes the reference (`/`) and the guide (`/guide/`); it also runs when
