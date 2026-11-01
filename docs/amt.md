@@ -60,6 +60,19 @@ one entity and a question mark it gives 1 / (1 + 1) = 0.50.
 The fourth edge has the same shape with another kind of method: the degree is the score a model reports,
 the evidence is the image it was run on.
 
+## An example from real data
+
+`data/fw_ogham_example.ttl` holds five real statements: the readings of the Ogham stone Gigha 1 (CIIC 506),
+from the project [Linked Open Ogham](https://github.com/LinkedOpenOgham/tei--epidoc-amt). One edition and four
+earlier readings compete for one inscription, so their degrees are shares of one unit (0.2727, 0.2727, 0.1818,
+0.1818, 0.0909; the sum is 1). The method is the project's own rule, an individual of `fw:RuleBasedMethod`
+that points to `fw:ProportionalShareRule` with `skos:broadMatch`.
+
+The type follows a rule of that project, which is a hypothesis and not part of the ontology: a damaged reading
+is vague, a disputed one is uncertain, one that is both gets the umbrella term, and a statement that nothing
+lowers has no type. Because the shares add up to 1, a stone with a single reading gets the degree 1 however
+damaged it is; the type then says what is doubtful.
+
 ## For the engine
 
 A reasoner that reads both `amt:weight` and `fw:hasDegreeOfConnection` treats the two as one property
