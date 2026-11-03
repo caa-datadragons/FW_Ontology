@@ -48,3 +48,9 @@ ex:s4 rdf:subject ex:stamp0815 ; rdf:predicate ex:depicts ; rdf:object ex:StampT
     fw:hasType   fw:Uncertainty ;
     fw:hasMethod fw:ModelConfidenceScore ;
     fw:derivedFrom ex:ev3 .
+
+# 4) A certain statement: no fuzziness at all, degree 1.0, type fw:Certainty, so that it takes part in reasoning.
+
+ex:s5 rdf:subject ex:carrier3 ; rdf:predicate ex:producedAt ; rdf:object ex:Rheinzabern ;
+    fw:hasDegreeOfConnection "1.00"^^xsd:decimal ;
+    fw:hasType   fw:Certainty .

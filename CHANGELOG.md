@@ -8,6 +8,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- `fw:Certainty`, a term of `fw:FW_Type` beside `fw:Vagueness` and `fw:Uncertainty` (not below `fw:FuzzinessWobbliness`):
+  a certain statement, degree 1.0. *Why:* A certain statement can be told from one whose type is not given, and takes part in reasoning.
+- `fw:AFEAssignment`, an assignment method: the degree is entered by the person recording the data in AFE or assigned by AFE
+  from the flag the person sets. Kept apart from `fw:EqualShareRule`, which reads the source strings of the Samian data.
+- `rdfs:seeAlso` from each value class to its type (`fw:VagueValue` to `fw:Vagueness`, and so on), and a note on type versus value class.
+- A fifth example statement in `data/fw_amt_example.ttl`: a certain statement.
 - Extension of the ontology for statements such as AMT edges: `fw:hasDegreeOfConnection` (equivalent to
   `amt:weight`), `fw:hasType` with `fw:FW_Type`, `fw:hasMethod` with a method hierarchy and
   `fw:formula`, `fw:implementedBy`, and optional evidence (`fw:derivedFrom`, text, media and embedding evidence), so that an AMT edge
@@ -32,6 +38,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- `fw:hasConfidence` is now a sub-property of `fw:hasDegreeOfConnection` (a confidence is one kind of degree); the comments of both say
+  so and mark the relation as work in progress. They were `rdfs:seeAlso` of each other and "not the same".
+- `fw:hasType` and `fw:FW_Type`: the comments say that AMT.engine reads a missing type as `fw:Vagueness`, how a derived statement gets its type,
+  and that `fw:Certainty` is written together with degree 1.0. `fw:UncertainValue` holds exactly one value.
+- `py/build_hierarchy.py`: the AMT view draws no box and no arrow for a type or a method that a statement does not carry.
 - The workflow runs `python main.py` and publishes the reference (`/`) and the guide (`/guide/`); it also runs when
   `docs/`, `data/` or `py/` change. The guide is white, in the colours of the CAA DataDragons logo.
 - `ontology/nfdi_fw_ontology.owl`: the prefix `nfdi_fw:` is now `fw:`. The namespace IRI is unchanged and the

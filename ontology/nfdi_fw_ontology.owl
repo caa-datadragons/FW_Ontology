@@ -34,8 +34,8 @@ Could for example be used with: https://fuzzy-sl.wikibase.cloud/wiki/Main_Page -
 
 ###  http://w3id.org/fw_ontology/hasConfidence
 fw:hasConfidence rdf:type owl:DatatypeProperty ;
-                      rdfs:subPropertyOf owl:topDataProperty ;
-                      rdfs:comment "Indicates the confidence level [0–1] assigned by the contributor or the system. The closer the value is to 1, the higher the confidence. A value of 1.0 would correspond to a certain statement."@en .
+                      rdfs:subPropertyOf owl:topDataProperty , fw:hasDegreeOfConnection ;
+                      rdfs:comment "Indicates the confidence level [0–1] assigned by the contributor or the system. The closer the value is to 1, the higher the confidence. A value of 1.0 would correspond to a certain statement. A confidence is one kind of degree of connection (fw:hasDegreeOfConnection); the degree itself may describe something other than a confidence. Work in progress: how far the two coincide is still being discussed with the AFE data model."@en .
 
 
 ###  http://w3id.org/fw_ontology/hasValue
@@ -59,7 +59,7 @@ fw:FuzzinessWobblinessValue rdf:type owl:Class ;
 
 ###  http://w3id.org/fw_ontology/UncertainValue
 fw:UncertainValue rdf:type owl:Class ;
-                       rdfs:comment "Represents the most likely value, although it may also be a different value."@en .
+                       rdfs:comment "Represents the most likely value, although it may also be a different value. It holds exactly one value; several candidate values are a fw:VagueValue or a fw:FuzzinessWobblinessValue."@en .
 					   
 ###  http://w3id.org/fw_ontology/UncertainResourceValue
 fw:UncertainResourceValue rdf:type owl:Class ;
@@ -86,7 +86,7 @@ fw:VagueValue rdf:type owl:Class ;
 
 fw:hasDegreeOfConnection a owl:DatatypeProperty ;
     rdfs:label "has degree of connection"@en ;
-    rdfs:comment "Degree [0-1] to which a connection (statement, edge) holds. Same meaning as amt:weight. Not the same as fw:hasConfidence, which is an assessment by a contributor or a system."@en ;
+    rdfs:comment "Degree [0-1] to which a connection (statement, edge) holds. Same meaning as amt:weight. The degree can describe anything that is measured between 0 and 1; fw:hasConfidence, an assessment by a contributor or a system, is a sub-property of it, not the other way round."@en ;
     rdfs:range xsd:decimal ;
     owl:equivalentProperty amt:weight ;
     rdfs:seeAlso fw:hasConfidence .
@@ -98,7 +98,7 @@ fw:hasMethod a owl:ObjectProperty ;
 
 fw:hasType a owl:ObjectProperty ;
     rdfs:label "has type"@en ;
-    rdfs:comment "The kind of fuzziness/wobbliness a statement or value is affected by: vagueness, uncertainty, or the two together."@en ;
+    rdfs:comment "The kind of fuzziness/wobbliness a statement or value is affected by: vagueness, uncertainty, or the two together; or fw:Certainty for a statement that is not affected by any of them. The value is a term (an individual of fw:FW_Type), not a value class such as fw:VagueValue. A statement without fw:hasType is read as fw:Vagueness by AMT.engine (also at degree 1.0); a tool that wants to say that a statement is certain writes fw:Certainty together with a degree of 1.0."@en ;
     rdfs:range fw:FW_Type .
 
 fw:formula a owl:DatatypeProperty ;
@@ -164,7 +164,7 @@ fw:embeddingModel a owl:DatatypeProperty ;
 
 fw:FW_Type a owl:Class ;
     rdfs:label "FW type"@en ;
-    rdfs:comment "Kind of fuzziness/wobbliness. The terms are individuals, so that fw:hasType points to a term, not to a class."@en .
+    rdfs:comment "Kind of fuzziness/wobbliness. The terms are individuals, so that fw:hasType points to a term, not to a class. Type and value class are two different things: the type (fw:Vagueness) says what kind of fuzziness a statement has; the value class (fw:VagueValue) is the container in which a value is stored. Each value class points to its type with rdfs:seeAlso. When a statement is derived from several others, AMT.engine gives it the common type of the antecedents; fw:Certainty does not count as long as another type is present, and different types give fw:FuzzinessWobbliness."@en .
 
 fw:FuzzinessWobbliness a fw:FW_Type ;
     rdfs:label "fuzziness/wobbliness"@en ;
@@ -177,6 +177,16 @@ fw:Vagueness a fw:FW_Type ;
 fw:Uncertainty a fw:FW_Type ;
     rdfs:label "uncertainty"@en ;
     skos:broader fw:FuzzinessWobbliness .
+
+fw:Certainty a fw:FW_Type ;
+    rdfs:label "certainty"@en ;
+    rdfs:comment "The statement is certain: it is neither vague nor uncertain nor fuzzy/wobbly. Its degree of connection is 1.0. The term exists so that certain statements can be told from statements whose type is not given, and so that they take part in reasoning. It stands beside fw:Vagueness and fw:Uncertainty, not below fw:FuzzinessWobbliness. Not to be confused with the property fw:hasCertainty."@en .
+
+# ---- value classes: pointer to the type ------------------------------------------
+
+fw:VagueValue rdfs:seeAlso fw:Vagueness .
+fw:UncertainValue rdfs:seeAlso fw:Uncertainty .
+fw:FuzzinessWobblinessValue rdfs:seeAlso fw:FuzzinessWobbliness .
 
 # ---- value classes: umbrella relation ------------------------------------------
 
@@ -236,6 +246,10 @@ fw:EqualShareRule a fw:RuleBasedMethod ;
     rdfs:comment "Reads the AND / OR / '?' form of a source string. The alternatives of an OR share the weight equally, AND keeps the full weight for every entity, and a question mark counts as one more share. Rounded to two decimals. A string that mixes AND and OR is not covered."@en ;
     fw:formula "1 / (n_question + n_possibilities)" .
     # fw:implementedBy <...> follows once the code is published
+
+fw:AFEAssignment a fw:AssignmentMethod ;
+    rdfs:label "AFE assignment"@en ;
+    rdfs:comment "The degree is entered by the person recording the data in AFE, or assigned by AFE from the flag the person sets (a fixed value, or a value derived from the number of options, e.g. two options with 0.5 each). AFE keeps no source text. The exact rule is not fixed yet (work in progress). Not the same as fw:EqualShareRule, which reads the source strings of the Samian data."@en .
 
 fw:PearsonCorrelation a fw:CorrelationMethod ;
     rdfs:label "Pearson correlation"@en ;

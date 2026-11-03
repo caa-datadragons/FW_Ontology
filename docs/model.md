@@ -7,8 +7,8 @@ that is, and *how* the number was obtained?
 
 | Property | Range | Meaning |
 |---|---|---|
-| `fw:hasDegreeOfConnection` | `xsd:decimal` | Degree [0-1] to which a statement holds. `owl:equivalentProperty` of `amt:weight`. Not the same as `fw:hasConfidence`, which is an assessment by a contributor or a system. |
-| `fw:hasType` | `fw:FW_Type` | The kind of fuzziness/wobbliness: vagueness, uncertainty, or both together. |
+| `fw:hasDegreeOfConnection` | `xsd:decimal` | Degree [0-1] to which a statement holds. `owl:equivalentProperty` of `amt:weight`. The degree can describe anything between 0 and 1; `fw:hasConfidence` (an assessment by a contributor or a system) is a sub-property of it, not the other way round. |
+| `fw:hasType` | `fw:FW_Type` | The kind of fuzziness/wobbliness: vagueness, uncertainty, or both together; or certainty for a statement without any of them. |
 | `fw:hasMethod` | `fw:Method` | The method by which the degree was obtained. |
 | `fw:formula` | `xsd:string` | The calculation rule of a method as text. |
 | `fw:implementedBy` | IRI | Resolvable IRI of the code that implements a method. |
@@ -22,6 +22,17 @@ points to a term and not to a class.
 ![Branch: type](img/branch-fw-type.svg)
 
 `fw:FuzzinessWobbliness` is the umbrella term, used when vagueness and uncertainty cannot be told apart.
+
+`fw:Certainty` stands beside `fw:Vagueness` and `fw:Uncertainty`, not below the umbrella: a certain statement is
+neither vague nor uncertain. It goes with a degree of 1.0 and exists so that certain statements can be told from
+statements whose type is not given (AMT.engine reads a missing type as `fw:Vagueness`) and so that they take part in
+reasoning. When a statement is derived from several others, AMT.engine ignores `fw:Certainty` as long as another type is
+present; different types give `fw:FuzzinessWobbliness`.
+
+**Type or value class?** The type (`fw:Vagueness`) says what kind of fuzziness a statement has and is the value of
+`fw:hasType`. The value class (`fw:VagueValue`) is the container in which a value is stored, for example in AFE. Each
+value class points to its type with `rdfs:seeAlso`; `fw:UncertainValue` holds exactly one value, several candidates are a
+`fw:VagueValue` or a `fw:FuzzinessWobblinessValue`.
 
 `fw:UncertainValue` and `fw:VagueValue` are subclasses of `fw:FuzzinessWobblinessValue`, so that the value
 classes follow the same umbrella as the type terms. This is the only change to what the ontology said before;

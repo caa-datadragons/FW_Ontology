@@ -334,13 +334,18 @@ def view_amt(gd):
         targets = {3: (str(deg) if deg is not None else "-", "#ffffff", "#000000", 40),
                    4: (curie(typ) if typ else "-", INST_FILL, "#ffffff", 40),
                    5: (curie(met) if met else "-", INST_FILL, "#ffffff", 40)}
+        absent = {4: typ is None, 5: met is None}   # no box and no arrow for a term the statement does not carry
         for col, (txt, fill, colr, h) in targets.items():
+            if absent.get(col):
+                continue
             rect(out, centers[col], y, COLS[col][1], h, txt, fill, colr)
         if evs:
             rect(out, centers[6], y, 250, 68, evidence_lines(gd, evs[0]) + ([f"+{len(evs) - 1} more"] if len(evs) > 1 else []),
                  "#ffffff", size=11)
         for lab, col, a in ARCS:
             if col == 6 and not evs:
+                continue
+            if absent.get(col):
                 continue
             x1, y1 = centers[1], y - 24
             x2, y2 = centers[col], y - (34 if col == 6 else 20)
