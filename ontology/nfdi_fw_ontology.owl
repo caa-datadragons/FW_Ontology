@@ -103,7 +103,7 @@ fw:hasType a owl:ObjectProperty ;
 
 fw:formula a owl:DatatypeProperty ;
     rdfs:label "formula"@en ;
-    rdfs:comment "The calculation rule of a method as plain text, e.g. 1 / (n_question + n_possibilities)."@en ;
+    rdfs:comment "The calculation rule of a method as plain text, e.g. (1 / n_possibilities) * (1/2 if n_question else 1)."@en ;
     rdfs:domain fw:Method ;
     rdfs:range xsd:string .
 
@@ -243,9 +243,14 @@ fw:ExpertAssessment a owl:Class ;
 
 fw:EqualShareRule a fw:RuleBasedMethod ;
     rdfs:label "equal share rule"@en ;
-    rdfs:comment "Reads the AND / OR / '?' form of a source string. The alternatives of an OR share the weight equally, AND keeps the full weight for every entity, and a question mark counts as one more share. Rounded to two decimals. A string that mixes AND and OR is not covered."@en ;
-    fw:formula "1 / (n_question + n_possibilities)" .
+    rdfs:comment "Reads the AND / OR / '?' form of a source string. The alternatives of an OR share the weight equally, AND keeps the full weight for every entity, and a question mark halves the weight of every entity of the string (decided with Allard Mees on 2026-11-04; before that day a question mark counted as one more share, 1 / (n_question + n_possibilities), which gave one third each for 'A or B ?' and now gives 0.25). Examples: 'A or B or C' 0.33 each, 'A or B ?' 0.25 each, 'A and B ?' 0.5 each, 'A ?' 0.5. Rounded to two decimals. A string that mixes AND and OR is not covered."@en ;
+    fw:formula "(1 / n_possibilities) * (1/2 if n_question else 1)" .
     # fw:implementedBy <...> follows once the code is published
+
+fw:FrequencyShare a fw:ProbabilityMethod ;
+    rdfs:label "probability based on frequency share"@en, "Wahrscheinlichkeit basierend auf dem Häufigkeitsanteil"@de ;
+    rdfs:comment "The share of an alternative of an OR among the vessels of all alternatives in the database (for the string '31 or 31R': 9,070 of 11,302 = 0.8025 and 2,232 of 11,302 = 0.1975). Additional information for the archaeologist, who can check an existing uncertainty against the distribution in the database; it does not replace the degree of the statement (fw:EqualShareRule), does not enter reasoning, and a question mark in the string does not change it. Level A is the whole database; the potter's repertoire (smoothed) and the stamp are planned levels. Agreed with Allard Mees on 2026-11-04."@en ;
+    fw:formula "share_i = n_i / (n_1 + ... + n_k), n = number of vessels with the form in the database" .
 
 fw:AFEAssignment a fw:AssignmentMethod ;
     rdfs:label "AFE assignment"@en ;

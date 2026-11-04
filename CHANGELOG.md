@@ -6,7 +6,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- `fw:EqualShareRule`: a question mark now halves the weight of every entity, `(1 / n_possibilities) * (1/2 if n_question else 1)`; before it counted as one more share, `1 / (n_question + n_possibilities)`. `A or B ?` gives 0.25 each (was 0.33); `A ?`, `A and B ?`, `A and B` and `A or B` keep their degrees. The individual keeps its name. The examples in `data/fw_amt_example.ttl`, `docs/amt.md` and the figure follow. *Why:* Decided with Allard Mees on 2026-11-04 (Samian research); the former rule was the wrong approach for the data owners.
+
 ### Added
+
+- `fw:FrequencyShare`, a `fw:ProbabilityMethod`: the share of an alternative of an OR among the vessels of all alternatives in the database (`31 or 31R` = 0.8025 and 0.1975). Additional information next to the degree, not a replacement for it. *Why:* Allard Mees wanted the frequency of the forms visible without changing the uncertainty statement. The property for the share itself is not defined yet; the Mini-AMT repository uses `mini:frequencyShare` until then.
+
+### Added (earlier, unreleased)
 
 - `fw:Certainty`, a term of `fw:FW_Type` beside `fw:Vagueness` and `fw:Uncertainty` (not below `fw:FuzzinessWobbliness`):
   a certain statement, degree 1.0. *Why:* A certain statement can be told from one whose type is not given, and takes part in reasoning.

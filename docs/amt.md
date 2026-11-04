@@ -16,12 +16,15 @@ disjointness.
 
 The weight of an edge is taken from the string in the source (Thiery, Mees, Tolle and Wigg-Wolf 2021):
 
-    amt_weight = 1 / (n_question + n_possibilities)
+    amt_weight = (1 / n_possibilities) * (1/2 if n_question else 1)
 
 - **AND** keeps the full weight for every entity.
 - **OR**: the alternatives share the weight equally; `n_possibilities` is their number.
-- **?** counts as one more share (`n_question` = 1).
+- **?** halves the weight of every entity of the string (`n_question` = 1). Decided with Allard Mees on
+  2026-11-04; before that day a question mark counted as one more share, `1 / (n_question + n_possibilities)`.
 - The result is rounded to two decimals. A string that mixes AND and OR is not covered.
+
+Examples: "A or B or C" gives 0.33 to each, "A or B ?" 0.25 to each, "A and B ?" 0.5 to each, "A ?" 0.5.
 
 In the ontology this rule is the individual `fw:EqualShareRule`, a `fw:RuleBasedMethod` with the formula as a
 literal, so that it can be named, described and resolved like any other method.
@@ -48,14 +51,14 @@ the archaeological model.
 
 | Edge | Evidence | Degree | Type | Method |
 |---|---|---|---|---|
-| carrier1 produced at Lezoux | text "Lezoux or Vichy ?" | 0.33 | fuzziness/wobbliness | equal share rule |
-| carrier1 produced at Vichy | the same text | 0.33 | fuzziness/wobbliness | equal share rule |
+| carrier1 produced at Lezoux | text "Lezoux or Vichy ?" | 0.25 | fuzziness/wobbliness | equal share rule |
+| carrier1 produced at Vichy | the same text | 0.25 | fuzziness/wobbliness | equal share rule |
 | carrier2 produced at South Gaul | text "South Gaul?" | 0.50 | uncertainty | equal share rule |
 | stamp depicts stamp type X | image (AI detection) | 0.87 | uncertainty | model confidence score |
 
 The first two edges show why the evidence is a node of its own: both alternatives come from one string and
-point to the same evidence. With one question mark and two alternatives the rule gives 1 / (1 + 2) = 0.33; with
-one entity and a question mark it gives 1 / (1 + 1) = 0.50.
+point to the same evidence. With one question mark and two alternatives the rule gives 1/2 * 1/2 = 0.25; with
+one entity and a question mark it gives 1 * 1/2 = 0.50.
 
 The fourth edge has the same shape with another kind of method: the degree is the score a model reports,
 the evidence is the image it was run on.
